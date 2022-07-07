@@ -5,7 +5,7 @@ namespace Task6._1
     public class Cache
     {
         private readonly int _capacity;
-        private ConcurrentDictionary<string, (object, TimeSpan)> _elements = new();
+        private Dictionary<string, (object, TimeSpan)> _elements = new();
         private bool IsCacheFull
         {
             get => _capacity - _elements.Count == 0;
@@ -32,18 +32,20 @@ namespace Task6._1
                 Remove(GetOldValues().First().key);
             }
 
-            AddOrUpdate(key, obj);
+            if (_elements.ContainsKey(key))
+            {
+                _elements[key] = (obj, DateTime.Now.TimeOfDay);
+            }
+            else
+            {
+                _elements.Add(key, (obj, DateTime.Now.TimeOfDay));
+            }
 
             if (!isThreadRunning)
             {
                 thread1.Start();
                 isThreadRunning = true;
             }
-        }
-
-        private void AddOrUpdate(string key, object obj)
-        {
-            _elements.AddOrUpdate(key, (obj, DateTime.Now.TimeOfDay), (k, v) => (obj, DateTime.Now.TimeOfDay));
         }
 
         private static void InputCheck(string key)
@@ -68,7 +70,7 @@ namespace Task6._1
             InputCheck(key);
             if (_elements.ContainsKey(key))
             {
-                AddOrUpdate(key, _elements[key].Item1);
+                _elements[key] = (_elements[key].Item1, DateTime.Now.TimeOfDay);
                 return _elements[key].Item1;
             }
             else
@@ -79,7 +81,7 @@ namespace Task6._1
 
         public bool Remove(string key)
         {
-            return _elements.TryRemove(key, out _);
+            return _elements.Remove(key, out _);
         }
 
         private void Scan()

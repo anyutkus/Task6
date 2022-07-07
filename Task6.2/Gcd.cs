@@ -23,7 +23,7 @@ namespace Task6._2
                     {
                         i++;
                     }
-                    else if (list2[j] < list1[i])
+                    else if (list1[i] > list2[j])
                     {
                         j++;
                     }
