@@ -31,16 +31,18 @@ namespace Task6._1
             {
                 Remove(GetOldValues().First().key);
             }
-
-            if (_elements.ContainsKey(key))
+            lock(_elements)
             {
-                _elements[key] = (obj, DateTime.Now.TimeOfDay);
+                if (_elements.ContainsKey(key))
+                {
+                    _elements[key] = (obj, DateTime.Now.TimeOfDay);
+                }
+                else
+                {
+                    _elements.Add(key, (obj, DateTime.Now.TimeOfDay));
+                }
             }
-            else
-            {
-                _elements.Add(key, (obj, DateTime.Now.TimeOfDay));
-            }
-
+            
             if (!isThreadRunning)
             {
                 thread1.Start();
@@ -70,7 +72,10 @@ namespace Task6._1
             InputCheck(key);
             if (_elements.ContainsKey(key))
             {
-                _elements[key] = (_elements[key].Item1, DateTime.Now.TimeOfDay);
+                lock(_elements)
+                {
+                    _elements[key] = (_elements[key].Item1, DateTime.Now.TimeOfDay);
+                }
                 return _elements[key].Item1;
             }
             else
@@ -81,7 +86,10 @@ namespace Task6._1
 
         public bool Remove(string key)
         {
-            return _elements.Remove(key, out _);
+            lock(_elements)
+            {
+                return _elements.Remove(key, out _);
+            }
         }
 
         private void Scan()
