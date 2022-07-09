@@ -118,9 +118,12 @@ namespace Task6._1
         public override string ToString()
         {
             string str = "";
-            foreach (var element in _elements)
+            lock(_elements)
             {
-                str += element.Key + " " + element.Value.ToString() + "\n";
+                foreach (var element in _elements)
+                {
+                    str += element.Key + " " + element.Value.ToString() + "\n";
+                }
             }
             return str;
         }
