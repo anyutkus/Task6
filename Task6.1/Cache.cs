@@ -5,7 +5,7 @@ namespace Task6._1
     public class Cache
     {
         private readonly int _capacity;
-        private Dictionary<string, (object, TimeSpan)> _elements = new();
+        private static Dictionary<string, (object, TimeSpan)> _elements = new();
         private bool IsCacheFull
         {
             get => _capacity - _elements.Count == 0;
@@ -88,11 +88,14 @@ namespace Task6._1
         {
             while (_elements.Count > 0)
             {
-                foreach (var (key, time) in GetOldValues())
+                lock(_elements)
                 {
-                    if ((DateTime.Now.TimeOfDay - time).Seconds > 10)
+                    foreach (var (key, time) in GetOldValues())
                     {
-                        Remove(key);
+                        if ((DateTime.Now.TimeOfDay - time).Seconds > 10)
+                        {
+                            Remove(key);
+                        }
                     }
                 }
                 Thread.Sleep(1000);
