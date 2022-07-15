@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 
 namespace Task6._1
 {
@@ -10,8 +11,7 @@ namespace Task6._1
         {
             get => _capacity - _elements.Count == 0;
         }
-        private bool isThreadRunning = false;
-        private Thread thread1;
+        private Timer _timer;
 
         public Cache(int capacity)
         {
@@ -20,7 +20,7 @@ namespace Task6._1
                 throw new ArgumentOutOfRangeException(nameof(capacity), "must be greater than 0");
             }
             _capacity = capacity;
-            thread1 = new Thread(Scan);
+            _timer = new Timer(state => Scan(), null, 3000, 1000);
         }
 
         public void Set(string key, object obj)
@@ -42,19 +42,13 @@ namespace Task6._1
                     _elements.Add(key, (obj, DateTime.Now.TimeOfDay));
                 }
             }
-            
-            if (!isThreadRunning)
-            {
-                thread1.Start();
-                isThreadRunning = true;
-            }
         }
 
         private static void InputCheck(string key)
         {
-            if (key == "" || key == null)
+            if (String.IsNullOrEmpty(key))
             {
-                throw new ArgumentException(nameof(key), "must be not empty and not null");
+                throw new ArgumentException("must be not empty and not null", nameof(key));
             }
         }
 
@@ -63,7 +57,7 @@ namespace Task6._1
             InputCheck(key);
             if (obj == null)
             {
-                throw new ArgumentNullException(nameof(obj), "must be not null");
+                throw new ArgumentNullException(nameof(obj));
             }
         }
 
@@ -94,7 +88,7 @@ namespace Task6._1
 
         private void Scan()
         {
-            while (_elements.Count > 0)
+            if (_elements.Count > 0)
             {
                 lock(_elements)
                 {
@@ -106,11 +100,14 @@ namespace Task6._1
                         }
                     }
                 }
-                Thread.Sleep(1000);
+            }
+            else
+            {
+                _timer.Dispose();
             }
         }
 
-        public IEnumerable<(string key, TimeSpan time)> GetOldValues()
+        private IEnumerable<(string key, TimeSpan time)> GetOldValues()
         {
             return _elements.OrderBy(x => x.Value.Item2).Select(x => (x.Key, x.Value.Item2));
         }

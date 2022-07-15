@@ -3,7 +3,7 @@ namespace Task6._2
 {
     public static class FAsyncLib
     {
-        public static Task<List<BigInteger>> FactorizationAsync(BigInteger N)
+        public static Task<List<BigInteger>> FactorizationAsync(BigInteger number)
         {
             var task = new TaskCompletionSource<List<BigInteger>>();
             new Thread(GetPrime).Start();
@@ -13,7 +13,7 @@ namespace Task6._2
             {
                 try
                 {
-                    var result = FLib.Factorization(N);
+                    var result = FLib.Factorization(number);
                     task.SetResult(result);
                 }
                 catch (Exception ex)

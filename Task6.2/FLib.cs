@@ -4,38 +4,38 @@ namespace Task6._2
 {
     public class FLib
     {
-        public static List<BigInteger> Factorization(BigInteger N)
+        public static List<BigInteger> Factorization(BigInteger number)
         {
             List<BigInteger> list = new();
-            if (N < 2)
+            if (number < 2)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            PrimeNumbers(N);
+            PrimeNumbers(number);
             return list;
 
-            void PrimeNumbers(BigInteger number)
+            void PrimeNumbers(BigInteger num)
             {
-                var num = Math.Ceiling(Math.Exp(BigInteger.Log(number) / 2));
+                var num1 = num;
                 var isPrime = true;
-
-                for (var i = 2; i <= num; i++)
+                for (BigInteger i = 2; i*i <= num; i++)
                 {
-                    while (number % i == 0)
+                    while (num1 % i == 0)
                     {
                         isPrime = false;
                         list.Add(i);
-                        number /= i;
+                        num1 /= i;
                     }
-                    if (i == num && number > 1)
-                    {
-                        list.Add(number);
-                    }
+                }
+
+                if (num1 > 1)
+                {
+                    list.Add(num1);
                 }
 
                 if (isPrime)
                 {
-                    list.Add(number);
+                    list.Add(num);
                 }
             }
         }

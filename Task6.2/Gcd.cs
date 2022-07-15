@@ -11,10 +11,13 @@ namespace Task6._2
 
             void GetGcd()
             {
-                var list1 = FAsyncLib.FactorizationAsync(num1).Result.ToArray();
-                var list2 = FAsyncLib.FactorizationAsync(num2).Result.ToArray();
+                var res1 = Task<BigInteger[]>.Run(() => FAsyncLib.FactorizationAsync(num1).Result.ToArray());
+                var res2 = Task<BigInteger[]>.Run(() => FAsyncLib.FactorizationAsync(num2).Result.ToArray());
                 BigInteger result = 1;
                 int i = 0, j = 0;
+                Task.WaitAll(res1, res2);
+                var list1 = res1.Result;
+                var list2 = res2.Result;
                 var l1 = list1.Length;
                 var l2 = list2.Length;
                 while (i < l1 && j < l2)
